@@ -1,0 +1,7 @@
+{
+  "name": "LifeCycle Pro - Advanced Age Calculator",
+  "description": "A feature-rich, Material Design inspired age calculator featuring precise life metrics, birthday countdowns, planetary age conversion, and AI-powered historical insights.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
