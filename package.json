@@ -9,8 +9,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "static": "vite build --base=./",
+    "cap:add": "npx cap add android",
     "cap:sync": "npm run build && npx cap sync",
-    "cap:open": "npx cap open android"
+    "cap:open": "npx cap open android",
+    "deploy": "npx vercel --prod"
   },
   "dependencies": {
     "@capacitor/android": "^6.0.0",
