@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Calendar, RefreshCw, Star, Info, Globe, Sparkles, ChevronRight, Hash, Sun, Moon, Brain, Compass, TrendingUp, Smartphone, ShieldCheck, Zap, Share2, Copy, ExternalLink, Cloud, Settings, Terminal, Download, Users, CheckCircle2, Package, FileCode, FolderOpen, Play, Rocket } from 'lucide-react';
-import { calculateAge, calculatePlanetAges } from './utils/dateUtils';
+import { Calendar, RefreshCw, Star, Info, Globe, Sparkles, ChevronRight, Hash, Sun, Moon, Brain, Compass, TrendingUp, Smartphone, ShieldCheck, Zap, Share2, Copy, ExternalLink, Cloud, Settings, Terminal, Download, Users, CheckCircle2, Package, FileCode, FolderOpen, Play, Rocket, Github, History, User, HeartPulse, Lightbulb } from 'lucide-react';
+import { calculateAge, calculatePlanetAges, getGeneration } from './utils/dateUtils';
 import { getAIInsights } from './services/geminiService';
 import { AgeDetails, PlanetAge, AIInsight } from './types';
 
@@ -13,6 +13,7 @@ const App: React.FC = () => {
   const [ageDetails, setAgeDetails] = useState<AgeDetails | null>(null);
   const [planetAges, setPlanetAges] = useState<PlanetAge[]>([]);
   const [aiInsight, setAiInsight] = useState<AIInsight | null>(null);
+  const [localGeneration, setLocalGeneration] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'summary' | 'details' | 'planets' | 'ai' | 'info'>('summary');
 
@@ -31,6 +32,7 @@ const App: React.FC = () => {
     const details = calculateAge(dateObj);
     setAgeDetails(details);
     setPlanetAges(calculatePlanetAges(dateObj));
+    setLocalGeneration(getGeneration(y));
     
     setIsLoading(true);
     const insights = await getAIInsights(dateObj);
@@ -182,6 +184,33 @@ const App: React.FC = () => {
                   </div>
                 </div>
               </div>
+              
+              <div className="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-black text-slate-800 flex items-center gap-2">
+                    <Compass size={18} className="text-indigo-500" />
+                    Life Stats
+                  </h3>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-slate-50 p-4 rounded-2xl">
+                    <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Total Days</p>
+                    <p className="text-xl font-black text-slate-800 tabular-nums">{ageDetails.totalDays.toLocaleString()}</p>
+                  </div>
+                  <div className="bg-slate-50 p-4 rounded-2xl">
+                    <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Total Weeks</p>
+                    <p className="text-xl font-black text-slate-800 tabular-nums">{ageDetails.totalWeeks.toLocaleString()}</p>
+                  </div>
+                  <div className="bg-slate-50 p-4 rounded-2xl">
+                    <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Total Months</p>
+                    <p className="text-xl font-black text-slate-800 tabular-nums">{ageDetails.totalMonths.toLocaleString()}</p>
+                  </div>
+                  <div className="bg-slate-50 p-4 rounded-2xl">
+                    <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Zodiac</p>
+                    <p className="text-xl font-black text-slate-800">{ageDetails.zodiacIcon} {ageDetails.zodiac}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -217,21 +246,80 @@ const App: React.FC = () => {
                 </div>
                 <h2 className="text-xl font-black text-slate-800">AI Cosmic Insights</h2>
               </div>
-              {!isLoading && aiInsight ? (
-                <div className="space-y-6">
-                  <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-100 p-6 rounded-[32px] shadow-inner relative overflow-hidden">
-                    <p className="text-[10px] font-black text-purple-600 uppercase tracking-[0.2em] mb-3">Era Flashback: {year}</p>
-                    <p className="text-slate-700 leading-relaxed font-bold text-lg italic pr-4">"{aiInsight.birthYearFact}"</p>
+
+              {/* Instant Local Generation Mapping (Always Visible) */}
+              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 rounded-[32px] text-white shadow-xl transition-all hover:scale-[1.01]">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-black text-indigo-100 uppercase tracking-widest mb-1">Generation Mapping</p>
+                    <h3 className="text-2xl font-black">{localGeneration || "Calculating..."}</h3>
+                    {aiInsight?.generation && (
+                      <p className="text-[11px] font-bold text-white/70 mt-1 max-w-[200px]">
+                        {aiInsight.generation.split(' - ')[1] || "A generation of change-makers."}
+                      </p>
+                    )}
                   </div>
+                  <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-lg">
+                    <Users size={28} />
+                  </div>
+                </div>
+              </div>
+              
+              {!isLoading && aiInsight ? (
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                  {/* Era Flashback */}
+                  <div className="bg-amber-50 border border-amber-100 p-6 rounded-[32px] shadow-sm">
+                    <div className="flex items-center gap-2 mb-3">
+                      <History size={16} className="text-amber-600" />
+                      <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Era Flashback: {year}</p>
+                    </div>
+                    <p className="text-slate-700 leading-relaxed font-bold italic">"{aiInsight.birthYearFact}"</p>
+                  </div>
+
+                  {/* Personality */}
+                  <div className="bg-rose-50 border border-rose-100 p-6 rounded-[32px] shadow-sm">
+                    <div className="flex items-center gap-2 mb-3">
+                      <User size={16} className="text-rose-600" />
+                      <p className="text-[10px] font-black text-rose-600 uppercase tracking-widest">Personality Nature</p>
+                    </div>
+                    <p className="text-slate-700 leading-relaxed">{aiInsight.personalityNature}</p>
+                  </div>
+
+                  {/* Historical Context */}
+                  <div className="bg-blue-50 border border-blue-100 p-6 rounded-[32px] shadow-sm">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Globe size={16} className="text-blue-600" />
+                      <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Historical Context</p>
+                    </div>
+                    <p className="text-slate-700 leading-relaxed">{aiInsight.historicalContext}</p>
+                  </div>
+
+                  {/* Life Path Advice */}
+                  <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-[32px] shadow-sm">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Lightbulb size={16} className="text-emerald-600" />
+                      <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Life Path Advice</p>
+                    </div>
+                    <p className="text-slate-700 leading-relaxed font-medium">{aiInsight.lifePathAdvice}</p>
+                  </div>
+
+                  {/* Future Outlook */}
                   <div className="bg-slate-900 p-8 rounded-[40px] text-white shadow-2xl relative overflow-hidden">
-                    <p className="text-xs font-black text-indigo-400 uppercase tracking-[0.3em] mb-4">Future Outlook</p>
+                    <div className="absolute -right-4 -top-4 opacity-10">
+                      <TrendingUp size={120} />
+                    </div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <HeartPulse size={16} className="text-indigo-400" />
+                      <p className="text-xs font-black text-indigo-400 uppercase tracking-[0.3em]">Future Outlook</p>
+                    </div>
                     <p className="text-base leading-relaxed font-medium text-indigo-50">{aiInsight.futurePredictions}</p>
                   </div>
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-20">
                   <RefreshCw className="text-indigo-400 animate-spin mb-4" size={40} />
-                  <p className="text-slate-400 font-bold">Aligning the Stars...</p>
+                  <p className="text-slate-400 font-bold">Consulting the Cosmic Records...</p>
+                  <p className="text-[10px] text-slate-300 font-black uppercase tracking-widest mt-2">Fetching AI Insights</p>
                 </div>
               )}
             </div>
@@ -239,22 +327,38 @@ const App: React.FC = () => {
 
           {activeTab === 'info' && (
             <div className="space-y-8 py-6 pb-12">
+                <div className="bg-gradient-to-br from-teal-600 to-emerald-700 p-8 rounded-[40px] text-white shadow-2xl relative overflow-hidden">
+                  <div className="relative z-10">
+                    <h3 className="text-xl font-black flex items-center gap-3 mb-4">
+                      <Globe size={24} /> Deploy to Netlify
+                    </h3>
+                    <p className="text-teal-50 text-sm leading-relaxed mb-6 font-medium">
+                      Sync with GitHub & Netlify for 24/7 hosting:
+                    </p>
+                    <ol className="space-y-3 text-xs font-bold text-teal-100">
+                      <li className="flex gap-2"><span className="opacity-50">1.</span> Create a repo on GitHub</li>
+                      <li className="flex gap-2"><span className="opacity-50">2.</span> Push your code using Git</li>
+                      <li className="flex gap-2"><span className="opacity-50">3.</span> Connect GitHub to Netlify</li>
+                      <li className="flex gap-2"><span className="opacity-50">4.</span> Set 'API_KEY' in Site Env Vars</li>
+                    </ol>
+                  </div>
+                  <div className="absolute -right-10 -bottom-10 opacity-10">
+                    <Github size={180} />
+                  </div>
+                </div>
+
                 <div className="bg-gradient-to-br from-indigo-600 to-purple-700 p-8 rounded-[40px] text-white shadow-2xl relative overflow-hidden">
                   <div className="relative z-10">
                     <h3 className="text-xl font-black flex items-center gap-3 mb-4">
-                      <Rocket size={24} /> Get Public URL
+                      <Rocket size={24} /> Instant Vercel URL
                     </h3>
                     <p className="text-indigo-100 text-sm leading-relaxed mb-6 font-medium">
-                      Want to share this app with friends for testing right now? Run this single command in your terminal:
+                      Quick test? Run this in your terminal:
                     </p>
                     <div className="bg-black/30 backdrop-blur-md p-4 rounded-2xl border border-white/10 flex items-center justify-between">
                        <code className="text-teal-300 font-mono text-sm">npx vercel</code>
                        <button onClick={() => copyToClipboard('npx vercel')} className="p-2 hover:bg-white/10 rounded-lg"><Copy size={16}/></button>
                     </div>
-                    <p className="text-[10px] mt-4 opacity-70 font-bold uppercase tracking-widest text-center">Your URL will be ready in 30s</p>
-                  </div>
-                  <div className="absolute -right-10 -bottom-10 opacity-10">
-                    <Globe size={180} />
                   </div>
                 </div>
 
@@ -262,18 +366,18 @@ const App: React.FC = () => {
                   <div className="p-2.5 bg-indigo-600 rounded-xl text-white">
                     <Play size={20} />
                   </div>
-                  <h2 className="text-xl font-black text-slate-800">Full Android Setup</h2>
+                  <h2 className="text-xl font-black text-slate-800">Android App Steps</h2>
                 </div>
 
                 <div className="bg-slate-900 p-6 rounded-[32px] shadow-xl text-white space-y-6">
                    <div className="flex items-center gap-3 border-b border-white/10 pb-4">
                       <Terminal size={18} className="text-teal-400" />
-                      <p className="text-xs font-black uppercase tracking-widest text-teal-400">Terminal Workflow</p>
+                      <p className="text-xs font-black uppercase tracking-widest text-teal-400">Local Terminal Commands</p>
                    </div>
                    
                    <div className="space-y-5">
                       <div className="group">
-                         <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">1. Install Engines</p>
+                         <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">1. Install Dependencies</p>
                          <div className="bg-black/40 p-3 rounded-xl flex items-center justify-between">
                             <code className="text-xs text-indigo-300">npm install</code>
                             <button onClick={() => copyToClipboard('npm install')} className="text-white/20 hover:text-white"><Copy size={14}/></button>
@@ -281,7 +385,7 @@ const App: React.FC = () => {
                       </div>
 
                       <div className="group">
-                         <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">2. Create Android Project</p>
+                         <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">2. Prep Android</p>
                          <div className="bg-black/40 p-3 rounded-xl flex items-center justify-between">
                             <code className="text-xs text-indigo-300">npm run cap:add</code>
                             <button onClick={() => copyToClipboard('npm run cap:add')} className="text-white/20 hover:text-white"><Copy size={14}/></button>
@@ -289,47 +393,11 @@ const App: React.FC = () => {
                       </div>
 
                       <div className="group">
-                         <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">3. Build & Sync</p>
+                         <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">3. Sync Code</p>
                          <div className="bg-black/40 p-3 rounded-xl flex items-center justify-between">
                             <code className="text-xs text-indigo-300">npm run cap:sync</code>
                             <button onClick={() => copyToClipboard('npm run cap:sync')} className="text-white/20 hover:text-white"><Copy size={14}/></button>
                          </div>
-                      </div>
-
-                      <div className="group">
-                         <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">4. Open Android Studio</p>
-                         <div className="bg-black/40 p-3 rounded-xl flex items-center justify-between">
-                            <code className="text-xs text-indigo-300">npm run cap:open</code>
-                            <button onClick={() => copyToClipboard('npm run cap:open')} className="text-white/20 hover:text-white"><Copy size={14}/></button>
-                         </div>
-                      </div>
-                   </div>
-                </div>
-
-                <div className="bg-white p-6 rounded-[32px] border-2 border-dashed border-indigo-100 shadow-sm space-y-5">
-                   <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-                         <Smartphone size={20} />
-                      </div>
-                      <h3 className="font-black text-slate-800">Android Studio Build</h3>
-                   </div>
-                   
-                   <p className="text-sm text-slate-600 leading-relaxed">
-                      Once Android Studio opens, follow the visual path to your APK:
-                   </p>
-                   
-                   <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                      <div className="flex items-center gap-2 mb-2">
-                         <div className="w-4 h-4 rounded-full bg-indigo-600 text-[10px] flex items-center justify-center text-white font-bold">1</div>
-                         <p className="text-xs font-bold text-slate-700">Go to: <span className="text-indigo-600">Build</span> menu</p>
-                      </div>
-                      <div className="flex items-center gap-2 mb-2">
-                         <div className="w-4 h-4 rounded-full bg-indigo-600 text-[10px] flex items-center justify-center text-white font-bold">2</div>
-                         <p className="text-xs font-bold text-slate-700">Select: <span className="text-indigo-600">Build Bundle(s) / APK(s)</span></p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                         <div className="w-4 h-4 rounded-full bg-indigo-600 text-[10px] flex items-center justify-center text-white font-bold">3</div>
-                         <p className="text-xs font-bold text-slate-700">Click: <span className="text-indigo-600 font-black">Build APK(s)</span></p>
                       </div>
                    </div>
                 </div>

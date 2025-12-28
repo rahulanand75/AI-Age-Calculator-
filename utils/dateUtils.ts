@@ -63,9 +63,18 @@ export const calculateAge = (birthDate: Date, today: Date = new Date()): AgeDeta
   };
 };
 
+export const getGeneration = (year: number): string => {
+  if (year >= 2013) return "Generation Alpha";
+  if (year >= 1997) return "Generation Z";
+  if (year >= 1981) return "Millennial (Gen Y)";
+  if (year >= 1965) return "Generation X";
+  if (year >= 1946) return "Baby Boomer";
+  if (year >= 1928) return "Silent Generation";
+  return "Greatest Generation";
+};
+
 const getZodiacSign = (month: number, day: number): string => {
   const signs = ["Capricorn", "Aquarius", "Pisces", "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius"];
-  // Boundaries for each sign: Jan 20, Feb 19, Mar 21, Apr 20, May 21, Jun 21, Jul 23, Aug 23, Sep 23, Oct 23, Nov 22, Dec 22
   const lastDays = [19, 18, 20, 19, 20, 20, 22, 22, 22, 22, 21, 21];
   return (day > lastDays[month - 1]) ? signs[month % 12] : signs[month - 1];
 };

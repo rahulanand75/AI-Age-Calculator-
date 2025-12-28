@@ -12,14 +12,20 @@ export const getAIInsights = async (birthDate: Date): Promise<AIInsight> => {
   const today = new Date();
   const currentAge = today.getFullYear() - birthYear;
 
-  const prompt = `Provide interesting life insights for someone born on ${birthMonth} ${birthDay}, ${birthYear} (currently ${currentAge} years old). Include:
-  1. A major historical or pop culture event from that exact year.
-  2. Their generational identity (Gen Z, Millennial, etc.) and a key trait.
-  3. A short "historical context" of the world when they were born.
-  4. A fun piece of "life path" advice based on their age today.
-  5. A detailed "Personality Nature" description based on their birth date and zodiac traits.
-  6. A set of "Future Predictions" for their next 5 years (career, personal growth, and wellness).
-  Return as a strictly formatted JSON object.`;
+  const prompt = `Provide interesting life insights for someone born on ${birthMonth} ${birthDay}, ${birthYear} (currently ${currentAge} years old).
+  Crucial Instructions:
+  1. Identify their exact generation (Gen Alpha, Gen Z, Millennial, Gen X, etc.) based on standard definitions.
+  2. Research a major pop-culture or historical event from ${birthYear}.
+  3. Describe their personality nature using zodiac traits for ${birthMonth} ${birthDay}.
+  4. Provide a forecast for the next 5 years based on their current age of ${currentAge}.
+  
+  Return as a strictly formatted JSON object with these fields:
+  "birthYearFact": A fascinating fact from ${birthYear}.
+  "generation": The full generation name and one signature trait.
+  "historicalContext": What the world was like during their birth.
+  "lifePathAdvice": Inspirational advice for their current life stage.
+  "personalityNature": Detailed summary of their core personality.
+  "futurePredictions": A roadmap for the next 5 years.`;
 
   try {
     const response = await ai.models.generateContent({
@@ -38,7 +44,6 @@ export const getAIInsights = async (birthDate: Date): Promise<AIInsight> => {
             futurePredictions: { type: Type.STRING },
           },
           required: ["birthYearFact", "generation", "historicalContext", "lifePathAdvice", "personalityNature", "futurePredictions"],
-          propertyOrdering: ["birthYearFact", "generation", "historicalContext", "lifePathAdvice", "personalityNature", "futurePredictions"],
         },
       },
     });
@@ -48,12 +53,12 @@ export const getAIInsights = async (birthDate: Date): Promise<AIInsight> => {
   } catch (error) {
     console.error("Gemini Insight Error:", error);
     return {
-      birthYearFact: "The year you were born was a time of great change and innovation.",
-      generation: "A unique generation shaped by technology and global events.",
-      historicalContext: "The world was transitioning into a new era of digital connection.",
-      lifePathAdvice: "Keep exploring and learning; your journey is just beginning!",
-      personalityNature: "You possess a resilient and adaptable spirit with a natural curiosity for the world.",
-      futurePredictions: "The next few years will bring opportunities for significant personal growth and new creative ventures.",
+      birthYearFact: "A pivotal year in modern history filled with cultural shifts.",
+      generation: "A generation defined by resilience and global connection.",
+      historicalContext: "The world was rapidly evolving into the digital age.",
+      lifePathAdvice: "The best time to plant a tree was 20 years ago. The second best time is now.",
+      personalityNature: "Balanced, determined, and uniquely gifted with adaptability.",
+      futurePredictions: "The coming years promise professional breakthroughs and personal enlightenment.",
     };
   }
 };
