@@ -48,9 +48,14 @@ const App: React.FC = () => {
     setPlanetAges(calculatePlanetAges(dateObj));
     
     setIsLoading(true);
-    const insights = await getAIInsights(dateObj);
-    setAiInsights(insights);
-    setIsLoading(false);
+    try {
+      const insights = await getAIInsights(dateObj);
+      setAiInsights(insights);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
   }, [day, month, year]);
 
   useEffect(() => {
@@ -62,7 +67,7 @@ const App: React.FC = () => {
       try {
         await navigator.share({
           title: 'LifeCycle Pro',
-          text: `Check out my Age and Vedic Rashi on LifeCycle Pro! Born on ${day}/${month}/${year}.`,
+          text: `Discover your Vedic Rashi & Age! I'm ${ageDetails?.years} years old. Born: ${day}/${month}/${year}.`,
           url: window.location.href,
         });
       } catch (err) {
@@ -139,7 +144,7 @@ const App: React.FC = () => {
               className="mt-4 w-full bg-white text-indigo-700 py-4 rounded-2xl font-black text-sm shadow-xl active:scale-[0.97] transition-all hover:bg-indigo-50 border-b-4 border-indigo-100 flex items-center justify-center gap-2"
             >
               {isLoading && <RefreshCw size={16} className="animate-spin" />}
-              CALCULATE JOURNEY
+              {isLoading ? "CALCULATING..." : "GENERATE PROFILE"}
             </button>
           </div>
         </header>
@@ -154,7 +159,7 @@ const App: React.FC = () => {
               {/* Main Age Card */}
               <div className="bg-white rounded-[32px] p-7 shadow-xl border border-slate-100 flex items-center justify-between group transition-all hover:border-indigo-200">
                 <div>
-                  <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Current Age</p>
+                  <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Your Age Today</p>
                   <div className="flex items-baseline gap-2">
                     <span className="text-6xl font-black text-slate-800 tabular-nums tracking-tighter">{ageDetails.years}</span>
                     <span className="text-xl font-bold text-slate-400">Years</span>
@@ -168,7 +173,7 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* Vedic Identity Card - Focus on Rashi & Nakshatram */}
+              {/* Vedic Identity Card - Accurate Sidereal Rashi */}
               <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-[32px] p-6 text-white shadow-2xl relative overflow-hidden">
                 <div className="absolute -right-6 -bottom-6 opacity-10">
                    <Sun size={140} fill="white" />
@@ -177,20 +182,20 @@ const App: React.FC = () => {
                   <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
                     <Moon size={16} fill="white" />
                   </div>
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-amber-50">Telugu Janma Rashi Profile</h3>
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-amber-50">Vedic Janma Profile</h3>
                 </div>
                 
                 {isLoading ? (
-                  <div className="flex items-center gap-4 py-6">
-                    <RefreshCw className="animate-spin text-white/50" size={24} />
-                    <p className="text-sm font-bold animate-pulse">Calculating Vedic Charts...</p>
+                  <div className="flex flex-col items-center gap-2 py-6">
+                    <RefreshCw className="animate-spin text-white/50" size={32} />
+                    <p className="text-xs font-black uppercase tracking-widest animate-pulse">Syncing with Panchangam...</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     <div className="flex justify-between items-end border-b border-white/20 pb-4">
                       <div>
                         <p className="text-[10px] font-black text-white/70 uppercase">Janma Rashi (జన్మ రాశి)</p>
-                        <p className="text-2xl font-black">{aiInsights?.janmaRashi || "Finding..."}</p>
+                        <p className="text-2xl font-black">{aiInsights?.janmaRashi || "Calculating..."}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-[10px] font-black text-white/70 uppercase">Padam (పాదం)</p>
@@ -199,7 +204,7 @@ const App: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-[10px] font-black text-white/70 uppercase">Nakshatram (నక్షత్రం)</p>
-                      <p className="text-3xl font-black tracking-tight">{aiInsights?.nakshatram || "Calculating..."}</p>
+                      <p className="text-3xl font-black tracking-tight">{aiInsights?.nakshatram || "Determining..."}</p>
                     </div>
                   </div>
                 )}
@@ -210,7 +215,7 @@ const App: React.FC = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-black text-slate-800 flex items-center gap-2">
                     <Compass size={18} className="text-indigo-500" />
-                    Journey Stats
+                    Life Metrics
                   </h3>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -227,7 +232,7 @@ const App: React.FC = () => {
                     <p className="text-lg font-black text-slate-800">{ageDetails.zodiacIcon} {ageDetails.zodiac}</p>
                   </div>
                   <div className="bg-rose-50 p-4 rounded-2xl border border-rose-100">
-                    <p className="text-[10px] font-black text-rose-600 uppercase mb-1">Next Birthday</p>
+                    <p className="text-[10px] font-black text-rose-600 uppercase mb-1">Next B'day In</p>
                     <p className="text-lg font-black text-slate-800">{ageDetails.nextBirthday.months}m {ageDetails.nextBirthday.days}d</p>
                   </div>
                 </div>
@@ -242,7 +247,7 @@ const App: React.FC = () => {
                 <div className="p-2.5 bg-indigo-100 rounded-xl text-indigo-600">
                   <Globe size={20} />
                 </div>
-                <h2 className="text-xl font-black text-slate-800">Planetary Life Cycles</h2>
+                <h2 className="text-xl font-black text-slate-800">Your Age in the Cosmos</h2>
               </div>
               <div className="grid grid-cols-1 gap-4">
                 {planetAges.map((planet) => (
@@ -253,12 +258,12 @@ const App: React.FC = () => {
                       </div>
                       <div>
                         <p className="text-slate-800 font-black text-lg">{planet.name}</p>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Rotational Age</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Orbit Age</p>
                       </div>
                     </div>
                     <div className="text-right">
                       <span className="text-3xl font-black text-slate-800 tabular-nums">{planet.age}</span>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase">Cycles</p>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase">Sol Cycles</p>
                     </div>
                   </div>
                 ))}
@@ -266,7 +271,7 @@ const App: React.FC = () => {
             </div>
           )}
 
-          {/* TAB 3: COSMIC AI INSIGHTS */}
+          {/* TAB 3: COSMIC AI */}
           {activeTab === 'ai' && (
              <div className="space-y-6 py-6 pb-12 animate-in slide-in-from-right duration-500">
               <div className="flex items-center gap-3 px-2">
@@ -280,10 +285,10 @@ const App: React.FC = () => {
               <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 rounded-[32px] text-white shadow-xl transition-all hover:scale-[1.01]">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-[10px] font-black text-indigo-100 uppercase tracking-widest mb-1">Generation Signature</p>
-                    <h3 className="text-2xl font-black">{aiInsights?.generation || "Analyzing..." }</h3>
+                    <p className="text-[10px] font-black text-indigo-100 uppercase tracking-widest mb-1">Generation Legacy</p>
+                    <h3 className="text-2xl font-black">{aiInsights?.generation || "Analyzing Archive..." }</h3>
                     <p className="text-[11px] font-bold text-white/70 mt-1 max-w-[200px]">
-                      Historical context: {year}
+                      Born in the era of {year}.
                     </p>
                   </div>
                   <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-lg">
@@ -301,33 +306,18 @@ const App: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2 mb-3">
                       <User size={16} className="text-rose-600" />
-                      <p className="text-[10px] font-black text-rose-600 uppercase tracking-widest">Nature & Traits</p>
+                      <p className="text-[10px] font-black text-rose-600 uppercase tracking-widest">Vedic Nature</p>
                     </div>
                     <p className="text-slate-700 leading-relaxed font-medium">{aiInsights.personalityNature}</p>
                   </div>
 
-                  {/* Era Flashback Section */}
-                  <div className="bg-amber-50 border border-amber-100 p-6 rounded-[32px] shadow-sm relative overflow-hidden">
-                    <div className="absolute -right-4 -top-4 opacity-5 text-amber-600">
-                      <History size={80} />
-                    </div>
+                  {/* Era Flashback */}
+                  <div className="bg-amber-50 border border-amber-100 p-6 rounded-[32px] shadow-sm">
                     <div className="flex items-center gap-2 mb-3">
                       <History size={16} className="text-amber-600" />
-                      <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Era Flashback: {year}</p>
+                      <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Era Milestone: {year}</p>
                     </div>
                     <p className="text-slate-700 leading-relaxed italic">"{aiInsights.birthYearFact}"</p>
-                  </div>
-
-                  {/* Historical Insight */}
-                  <div className="bg-blue-50 border border-blue-100 p-6 rounded-[32px] shadow-sm relative overflow-hidden">
-                    <div className="absolute -right-4 -top-4 opacity-5 text-blue-600">
-                      <Globe size={80} />
-                    </div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Globe size={16} className="text-blue-600" />
-                      <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">World When You Were Born</p>
-                    </div>
-                    <p className="text-slate-700 leading-relaxed">{aiInsights.historicalContext}</p>
                   </div>
 
                   {/* Life Path Advice */}
@@ -337,7 +327,7 @@ const App: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2 mb-3">
                       <Lightbulb size={16} className="text-emerald-600" />
-                      <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Life Path Advice</p>
+                      <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Life Guidance</p>
                     </div>
                     <p className="text-slate-700 leading-relaxed font-bold">{aiInsights.lifePathAdvice}</p>
                   </div>
@@ -349,7 +339,7 @@ const App: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2 mb-4">
                       <HeartPulse size={16} className="text-indigo-400" />
-                      <p className="text-xs font-black text-indigo-400 uppercase tracking-[0.3em]">Future Roadmap</p>
+                      <p className="text-xs font-black text-indigo-400 uppercase tracking-[0.3em]">5-Year Roadmap</p>
                     </div>
                     <p className="text-base leading-relaxed font-medium text-indigo-50 relative z-10">{aiInsights.futurePredictions}</p>
                   </div>
@@ -357,8 +347,8 @@ const App: React.FC = () => {
               ) : (
                 <div className="flex flex-col items-center justify-center py-20">
                   <RefreshCw className="text-indigo-400 animate-spin mb-4" size={40} />
-                  <p className="text-slate-400 font-bold">Reading the Universal Blueprint...</p>
-                  <p className="text-[10px] text-slate-300 font-black uppercase tracking-widest mt-2">Consulting Gemini AI</p>
+                  <p className="text-slate-400 font-bold">Consulting Gemini AI...</p>
+                  <p className="text-[10px] text-slate-300 font-black uppercase tracking-widest mt-2">Reading Galactic Records</p>
                 </div>
               )}
             </div>
