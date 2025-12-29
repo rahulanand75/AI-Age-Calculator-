@@ -42,8 +42,9 @@ export const calculateAge = (birthDate: Date, today: Date = new Date()): AgeDeta
 
   const weekday = nextBday.toLocaleDateString('en-US', { weekday: 'long' });
 
-  const zodiacSign = getZodiacSign(birthDate.getMonth() + 1, birthDate.getDate());
-
+  // Western Zodiac Sign (Tropical)
+  const westernZodiac = getWesternZodiacSign(birthDate.getMonth() + 1, birthDate.getDate());
+  
   return {
     years,
     months,
@@ -57,9 +58,9 @@ export const calculateAge = (birthDate: Date, today: Date = new Date()): AgeDeta
       days: nextBdayDays,
       weekday
     },
-    zodiac: zodiacSign,
-    zodiacIcon: getZodiacIcon(zodiacSign),
-    teluguRashi: getTeluguRashiName(zodiacSign)
+    zodiac: westernZodiac,
+    zodiacIcon: getZodiacIcon(westernZodiac),
+    teluguRashi: "" // Now handled exclusively by Vedic AI calculation
   };
 };
 
@@ -73,28 +74,13 @@ export const getGeneration = (year: number): string => {
   return "Greatest Generation";
 };
 
-const getZodiacSign = (month: number, day: number): string => {
+/**
+ * Calculates Western Zodiac (Tropical)
+ */
+const getWesternZodiacSign = (month: number, day: number): string => {
   const signs = ["Capricorn", "Aquarius", "Pisces", "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius"];
   const lastDays = [19, 18, 20, 19, 20, 20, 22, 22, 22, 22, 21, 21];
   return (day > lastDays[month - 1]) ? signs[month % 12] : signs[month - 1];
-};
-
-const getTeluguRashiName = (zodiacSign: string): string => {
-  const rashiMap: Record<string, string> = {
-    Aries: "Mesham (మేషం)",
-    Taurus: "Vrushabham (వృషభం)",
-    Gemini: "Mithunam (మిథునం)",
-    Cancer: "Karkatakam (కర్కాటకం)",
-    Leo: "Simham (సింహం)",
-    Virgo: "Kanya (కన్య)",
-    Libra: "Tula (తుల)",
-    Scorpio: "Vruschikam (వృశ్చికం)",
-    Sagittarius: "Dhanussu (ధనుస్సు)",
-    Capricorn: "Makaram (మకరం)",
-    Aquarius: "Kumbham (కుంభం)",
-    Pisces: "Meenam (మీనం)"
-  };
-  return rashiMap[zodiacSign] || "Unknown";
 };
 
 const getZodiacIcon = (sign: string): string => {

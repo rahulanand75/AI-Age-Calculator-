@@ -32,4 +32,7 @@ export interface AIInsight {
   lifePathAdvice: string;
   personalityNature: string;
   futurePredictions: string;
+  janmaRashi: string;
+  nakshatram: string;
+  padham: string;
 }
